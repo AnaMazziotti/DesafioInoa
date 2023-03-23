@@ -36,9 +36,11 @@ namespace TesteAPI
 
             string QUERY_URL = "https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL,BTC-BRL";
             //Opções de moeda para colocar na linha de comando para essa API de teste: USD,EUR,BTC
+            //Usei uma API de moedas porque era a melhor opção gratuita disponível em tempo real
+
             using (HttpClient client = new HttpClient())
             {
-                while (true)
+                while (true) //monitoramento contínuo
                 {
                     //fazendo requisição para a API
                     HttpResponseMessage respostaAPI = await client.GetAsync(QUERY_URL);
@@ -62,9 +64,8 @@ namespace TesteAPI
                         decimal PrecoCompraFinal = Convert.ToDecimal(PrecoCompra) / 10000;
                         decimal PrecoVendaFinal = Convert.ToDecimal(PrecoVenda) / 10000;
 
-
-                        Console.WriteLine($"A cotação da ação {ativo} é: R$ {PrecoCompraFinal.ToString("N2")}");
-                        //Console.WriteLine($"A cotação da ação {ativo} é: R$ {PrecoVendaFinal.ToString("N2")}");
+                        Console.WriteLine($"A cotação do ativo {ativo} é: R$ {PrecoCompraFinal.ToString("N2")}");
+                        //Console.WriteLine($"A cotação do ativo {ativo} é: R$ {PrecoVendaFinal.ToString("N2")}");
 
 
                         //LER ARQUIVO DE CONFIGURAÇÃO (para email)
@@ -74,7 +75,7 @@ namespace TesteAPI
                         var host = ConfigurationManager.AppSettings["host"];
                         int port = Int32.Parse(ConfigurationManager.AppSettings["port"]);
 
-                        //Para testes de disparo de email
+                        //inhas de código usadas para testes de disparo de email antes da integração com a API
                         /*Console.Write("Digite um valor: ");
                         string input = Console.ReadLine();
                         int cotacao = int.Parse(input);*/
@@ -105,7 +106,7 @@ namespace TesteAPI
 
                                 smtpClient1.Send(mailMessage1);
 
-                                Console.WriteLine("Email de compra enviado");
+                                Console.WriteLine("Email de compra enviado.");
                             }
 
                             catch (Exception ex)
@@ -128,8 +129,8 @@ namespace TesteAPI
 
                                 mailMessage2.Subject = subject;
                                 mailMessage2.Body = body;
-                                mailMessage2.SubjectEncoding = Encoding.GetEncoding("UTF-8"); //reconhece acentuações no assunto do email
-                                mailMessage2.BodyEncoding = Encoding.GetEncoding("UTF-8"); //reconhece acentuações no corpo do email
+                                mailMessage2.SubjectEncoding = Encoding.GetEncoding("UTF-8"); 
+                                mailMessage2.BodyEncoding = Encoding.GetEncoding("UTF-8"); 
 
                                 SmtpClient smtpClient2 = new SmtpClient(host, port);
 
@@ -140,7 +141,7 @@ namespace TesteAPI
 
                                 smtpClient2.Send(mailMessage2);
 
-                                Console.WriteLine("Email de venda enviado");
+                                Console.WriteLine("Email de venda enviado.");
                             }
 
                             catch (Exception ex)
@@ -151,7 +152,7 @@ namespace TesteAPI
                         }
                         else
                         {
-                            Console.WriteLine("nao manda email");
+                            Console.WriteLine("A cotação está dentro dos valores esperados. Não recomenda-se compra, nem venda");
                         }
 
 
@@ -162,7 +163,7 @@ namespace TesteAPI
                         Console.WriteLine(ex.Message);
                     }
 
-                    await Task.Delay(30000);
+                    await Task.Delay(30000); //monitoramento contínuo de 30 em 30 segundos
                 }
             }
         }
